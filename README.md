@@ -8,7 +8,7 @@ This GitHub Action helps to replace all placeholders in file
 Add this step in your workflow file
 ```yaml
 -   name: Run Replace Placeholders Action
-    uses: A-A-S-DevLab/actions-replace-placeholders@1.0.0
+    uses: A-A-S-DevLab/actions-replace-placeholders@v1.0.0
     with:
         template_path: 'templates/files'  # Directory with files (or specify a single file path)
         data_path: 'data/values.json'  # JSON file with replacement values
