@@ -1,6 +1,6 @@
 # GitHub Action - Replace placeholders
 
-This GitHub Action helps to replace all placeholders in file
+This GitHub Action helps to replace all placeholders like ${{name_1}} in file
 
 
 ## Usage

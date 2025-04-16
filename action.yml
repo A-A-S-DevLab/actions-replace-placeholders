@@ -1,5 +1,5 @@
 name: 'Create .env file'
-description: 'This GitHub Action helps to replace all placeholders like ${{name}} in file'
+description: 'This GitHub Action helps to replace all placeholders in file'
 author: 'Alexey Savelyev with AI'
 inputs:
     template_path:
