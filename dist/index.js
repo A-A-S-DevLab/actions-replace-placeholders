@@ -9,14 +9,6 @@ module.exports = eval("require")("@actions/core");
 
 /***/ }),
 
-/***/ 480:
-/***/ ((module) => {
-
-module.exports = eval("require")("glob");
-
-
-/***/ }),
-
 /***/ 896:
 /***/ ((module) => {
 
@@ -75,61 +67,57 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(571);
 const fs = __nccwpck_require__(896);
 const path = __nccwpck_require__(928);
-const glob = __nccwpck_require__(480);  // Import the glob package
 
 try {
-    const templatePath = core.getInput('template_path');  // Path to the template (either file or folder)
-    const dataPath = core.getInput('data_path');  // Path to the JSON data file
-    const outputDir = core.getInput('output_dir') || '.';  // Directory to save modified files
-    const mask = core.getInput('mask') || '**/*.json';  // Mask to filter files (default is '*.json')
+  const templatePath = core.getInput('template_path');
+  const dataPath = core.getInput('data_path');
+  const outputDir = core.getInput('output_dir');
+  const mask = core.getInput('mask') || '*.json';
 
-    // Read the data (values to replace placeholders in template files)
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
 
-    // Check if templatePath is a file or directory
-    const isDirectory = fs.lstatSync(templatePath).isDirectory();
+  const isDirectory = fs.lstatSync(templatePath).isDirectory();
+  const maskSuffix = mask.replace('*', '').toLowerCase(); // e.g., '.txt' from '*.txt'
 
-    // If templatePath is a directory, process files using the mask
-    if (isDirectory) {
-        // Use glob to find all files matching the mask in the directory
-        const files = glob.sync(mask, { cwd: templatePath });
-
-        files.forEach(file => {
-            const filePath = path.join(templatePath, file);
-            processFile(filePath, file);
-        });
+  if (isDirectory) {
+    const files = fs.readdirSync(templatePath);
+    files.forEach(file => {
+      if (file.toLowerCase().endsWith(maskSuffix)) {
+        const filePath = path.join(templatePath, file);
+        processFile(filePath, file);
+      }
+    });
+  } else {
+    // Single file mode
+    if (!templatePath.toLowerCase().endsWith(maskSuffix)) {
+      console.log(`🟡 Skipped file: ${templatePath} (does not match mask: ${mask})`);
     } else {
-        // If templatePath is a single file, process just that file
-        processFile(templatePath, path.basename(templatePath));
+      processFile(templatePath, path.basename(templatePath));
+    }
+  }
+
+  function processFile(filePath, fileName) {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+
+    const updatedContent = fileContent.replace(/\$\{\{(.*?)\}\}/g, (match, key) => {
+      const value = data[key.trim()];
+      return value !== undefined ? value : match;
+    });
+
+    const outputFilePath = path.join(outputDir, fileName);
+    const outputDirPath = path.dirname(outputFilePath);
+
+    if (!fs.existsSync(outputDirPath)) {
+      fs.mkdirSync(outputDirPath, { recursive: true });
+      console.log(`📁 Created directory: ${outputDirPath}`);
     }
 
-    function processFile(filePath, fileName) {
-        // Read the content of the file
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
-
-        // Replace placeholders with data from the JSON file
-        const updatedContent = fileContent.replace(/\$\{\{(.*?)\}\}/g, (match, key) => {
-            const value = data[key.trim()];
-            return value !== undefined ? value : match;
-        });
-
-        // Determine the output file path (using the original file name)
-        const outputFilePath = path.join(outputDir, fileName);
-
-        // Ensure the output directory exists
-        const outputDirPath = path.dirname(outputFilePath);
-        if (!fs.existsSync(outputDirPath)) {
-            fs.mkdirSync(outputDirPath, { recursive: true });
-            console.log(`📁 Created directory: ${outputDirPath}`);
-        }
-
-        // Write the updated content to the output file
-        fs.writeFileSync(outputFilePath, updatedContent);
-        console.log(`✅ Placeholders replaced in: ${fileName}`);
-    }
+    fs.writeFileSync(outputFilePath, updatedContent);
+    console.log(`✅ Updated: ${fileName}`);
+  }
 
 } catch (error) {
-    core.setFailed(`❌ Error: ${error.message}`);
+  core.setFailed(`❌ Error: ${error.message}`);
 }
 module.exports = __webpack_exports__;
 /******/ })()

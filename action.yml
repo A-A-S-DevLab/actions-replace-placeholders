@@ -14,9 +14,9 @@ inputs:
         required: true
         default: '.'
     mask:
-        description: 'Glob pattern to filter files in the directory (default is `**/*.json`).'
+        description: 'Simple file mask, e.g., *.txt or *.json'
         required: false
-        default: '**/*.json'
+        default: '*.json'
 
 runs:
     using: 'node20'

@@ -13,7 +13,7 @@ Add this step in your workflow file
         template_path: 'templates/files'  # Directory with files (or specify a single file path)
         data_path: 'data/values.json'  # JSON file with replacement values
         output_dir: 'dist/files-output'  # Directory to save modified files
-        mask: '**/*.txt'  # Mask to filter files (e.g., '*.txt', '**/*.json')
+        mask: '*.txt'  # Mask to filter files (e.g., '*.txt', '*.json')
 ```
 
 ## Input Variables
@@ -21,5 +21,5 @@ Add this step in your workflow file
 - `template_path`: The path to the template file or directory.
 - `data_path`: Path to the JSON file containing the replacement data.
 - `output_dir`: Directory where modified files will be saved.
-- `mask`: 'Glob pattern to filter files in the directory (default is `**/*.json`).'
+- `mask`: 'Simple file mask, e.g., *.txt or *.json.'
 
