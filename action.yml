@@ -1,0 +1,23 @@
+name: 'Create .env file'
+description: 'This GitHub Action helps to replace all placeholders like ${{name}} in file'
+author: 'Alexey Savelyev with AI'
+inputs:
+    template_path:
+        description: 'The path to the template file or directory.'
+        required: true
+        default: ''
+    data_path:
+        description: 'Path to the JSON file containing the replacement data.'
+        required: true
+    output_dir:
+        description: 'Directory where modified files will be saved.'
+        required: true
+        default: '.'
+    mask:
+        description: 'Glob pattern to filter files in the directory (default is `**/*.json`).'
+        required: false
+        default: '**/*.json'
+
+runs:
+    using: 'node20'
+    main: 'dist/index.js'
