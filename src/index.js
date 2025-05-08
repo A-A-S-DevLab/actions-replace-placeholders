@@ -3,10 +3,23 @@ const fs = require('fs');
 const path = require('path');
 
 try {
-  const templatePath = core.getInput('template_path');
-  const dataPath = core.getInput('data_path');
-  const outputDir = core.getInput('output_dir');
+  let templatePath = core.getInput('template_path');
+  let dataPath = core.getInput('data_path');
+  let outputDir = core.getInput('output_dir');
   const mask = core.getInput('mask') || '*.json';
+
+  if (templatePath.startsWith('./'))
+  {
+    templatePath = templatePath.slice(2);
+  }
+  if (dataPath.startsWith('./'))
+  {
+    dataPath = dataPath.slice(2);
+  }
+  if (outputDir.startsWith('./'))
+  {
+    outputDir = outputDir.slice(2);
+  }
 
   const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
 
