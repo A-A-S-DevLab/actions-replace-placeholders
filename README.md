@@ -21,5 +21,5 @@ Add this step in your workflow file
 - `template_path`: The path to the template file or directory.
 - `data_path`: Path to the JSON file containing the replacement data.
 - `output_dir`: Directory where modified files will be saved.
-- `mask`: 'Simple file mask, e.g., *.txt or *.json.'
+- `mask`: File name mask: `*` matches any characters, `?` one character, case-insensitive (e.g., `*.txt`, `*.json`, `*.*`, `*`). Default `*.json`. In directory mode subdirectories are processed too, and their structure is kept in `output_dir`.
 
