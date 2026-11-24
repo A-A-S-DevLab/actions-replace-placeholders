@@ -27,6 +27,19 @@ function checkRelativePath(name, value) {
     return value;
 }
 
+function writeFile(filePath, content, mode, details) {
+    const dirPath = path.dirname(filePath);
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, {recursive: true});
+        console.log(`📁 Created directory: ${dirPath}`);
+    }
+    fs.writeFileSync(filePath, content, {encoding: 'utf8', mode});
+    if (mode !== undefined) {
+        fs.chmodSync(filePath, mode);
+    }
+    console.log(`✅ Updated: ${filePath}${details ? ` (${details})` : ''}`);
+}
+
 function placeholderValues(data) {
     const values = new Map();
     for (const [key, value] of Object.entries(data)) {
@@ -87,17 +100,6 @@ function replacePlaceholders(content, values, isJson) {
     return {updatedContent, unresolvedKeys};
 }
 
-function writeFile(outputPath, relativePath, content) {
-    const outputFilePath = path.join(outputPath, relativePath);
-    const outputDirPath = path.dirname(outputFilePath);
-    if (!fs.existsSync(outputDirPath)) {
-        fs.mkdirSync(outputDirPath, {recursive: true});
-        console.log(`📁 Created directory: ${outputDirPath}`);
-    }
-    fs.writeFileSync(outputFilePath, content);
-    console.log(`✅ Updated: ${relativePath}`);
-}
-
 try {
     const configsPath = checkRelativePath('configs_path', core.getInput('configs_path'));
     const configsMask = core.getInput('configs_mask') || '*.json';
@@ -124,7 +126,7 @@ try {
     }
 
     for (const {relativePath, updatedContent} of results) {
-        writeFile(outputPath, relativePath, updatedContent);
+        writeFile(path.join(outputPath, relativePath), updatedContent);
     }
 } catch (error) {
     core.setFailed(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
