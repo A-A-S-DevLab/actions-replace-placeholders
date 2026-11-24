@@ -23,3 +23,4 @@ Add this step in your workflow file
 - `output_dir`: Directory where modified files will be saved.
 - `mask`: File name mask: `*` matches any characters, `?` one character, case-insensitive (e.g., `*.txt`, `*.json`, `*.*`, `*`). Default `*.json`. In directory mode subdirectories are processed too, and their structure is kept in `output_dir`.
 
+In `*.json` files a value is escaped as the content of a JSON string (`"`, `\`, line breaks), so a placeholder must be inside quotes: `"Password": "${{ db_password }}"`. In other files values are inserted as is.

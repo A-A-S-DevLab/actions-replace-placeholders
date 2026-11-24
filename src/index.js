@@ -81,10 +81,15 @@ try {
 
     function processFile(filePath, relativePath) {
         const fileContent = fs.readFileSync(filePath, 'utf-8');
+        // В *.json значение экранируется как содержимое строки: " \ и переводы строк не ломают JSON
+        const isJson = /\.json$/i.test(filePath);
 
         const updatedContent = fileContent.replace(/\$\{\{(.*?)\}\}/g, (match, key) => {
             const value = values.get(key.trim().toLowerCase());
-            return value !== undefined ? value : match;
+            if (value === undefined) {
+                return match;
+            }
+            return isJson ? JSON.stringify(value).slice(1, -1) : value;
         });
 
         const outputFilePath = path.join(outputDir, relativePath);
