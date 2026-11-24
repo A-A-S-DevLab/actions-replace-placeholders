@@ -107,11 +107,12 @@ try {
 
     const values = placeholderValues(parseJsonData(jsonData));
     const unresolved = new Set();
+    const results = [];
     for (const {filePath, relativePath} of listFiles(configsPath, configsMask)) {
         const content = fs.readFileSync(filePath, 'utf8');
         const {updatedContent, unresolvedKeys} = replacePlaceholders(content, values, /\.json$/i.test(filePath));
         unresolvedKeys.forEach(key => unresolved.add(`${key} in ${relativePath}`));
-        writeFile(outputPath, relativePath, updatedContent);
+        results.push({relativePath, updatedContent});
     }
 
     if (unresolved.size > 0) {
@@ -120,6 +121,10 @@ try {
             throw new Error(message);
         }
         console.log(`🟡 ${message}`);
+    }
+
+    for (const {relativePath, updatedContent} of results) {
+        writeFile(outputPath, relativePath, updatedContent);
     }
 } catch (error) {
     core.setFailed(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
