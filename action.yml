@@ -1,4 +1,4 @@
-name: 'Create .env file'
+name: 'Replace placeholders'
 description: 'This GitHub Action helps to replace all placeholders in file'
 author: 'Alexey Savelyev with AI'
 inputs:
@@ -23,5 +23,5 @@ inputs:
         default: '*.json'
 
 runs:
-    using: 'node20'
+    using: 'node24'
     main: 'dist/index.js'

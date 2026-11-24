@@ -13,6 +13,7 @@ Add this step in your workflow file
         template_path: 'templates/files'  # Directory with files (or specify a single file path)
         json: ${{ steps.service_secrets.outputs.credentials }}  # JSON object with replacement values
         output_dir: 'dist/files-output'  # Directory to save modified files
+        is_allow_unresolved: false  # Fail on placeholders without a value
         mask: '*.txt'  # Mask to filter files (e.g., '*.txt', '*.json')
 ```
 
