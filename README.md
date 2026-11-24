@@ -6,7 +6,7 @@ Replaces `${{ key }}` placeholders in config files with values from a JSON objec
 
 ```yaml
 -   name: Replace placeholders
-    uses: A-A-S-DevLab/actions-replace-placeholders@v1.0.0
+    uses: A-A-S-DevLab/actions-replace-placeholders@v2.0.0
     with:
         configs_path: './config'
         configs_mask: '*.*'
