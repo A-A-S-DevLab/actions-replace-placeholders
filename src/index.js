@@ -42,6 +42,7 @@ try {
     let templatePath = core.getInput('template_path');
     const json = core.getInput('json');
     let outputDir = core.getInput('output_dir');
+    const isAllowUnresolved = core.getBooleanInput('is_allow_unresolved');
     const mask = core.getInput('mask') || '*.json';
 
     if (templatePath.startsWith('./')) {
@@ -53,6 +54,8 @@ try {
 
     const values = parseValues(json);
     const maskRegExp = maskToRegExp(mask);
+    // Плейсхолдеры без значения в json: «ключ in файл», только имена, без значений
+    const unresolved = new Set();
 
     if (fs.statSync(templatePath).isDirectory()) {
         // Обходим подпапки, структура сохраняется в output_dir
@@ -65,6 +68,14 @@ try {
         } else {
             processFile(templatePath, fileName);
         }
+    }
+
+    if (unresolved.size > 0) {
+        const message = `Unresolved placeholders: ${[...unresolved].join(', ')}`;
+        if (!isAllowUnresolved) {
+            throw new Error(message);
+        }
+        console.log(`🟡 ${message}`);
     }
 
     function processDirectory(dirPath, relativeDir) {
@@ -87,6 +98,7 @@ try {
         const updatedContent = fileContent.replace(/\$\{\{(.*?)\}\}/g, (match, key) => {
             const value = values.get(key.trim().toLowerCase());
             if (value === undefined) {
+                unresolved.add(`${key.trim()} in ${relativePath}`);
                 return match;
             }
             return isJson ? JSON.stringify(value).slice(1, -1) : value;
