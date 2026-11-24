@@ -11,27 +11,27 @@ function maskToRegExp(mask) {
     return new RegExp(`^${pattern}$`, 'i');
 }
 
-// Значения из json по ключу в нижнем регистре: плейсхолдеры ищутся без учёта регистра.
-function parseValues(json) {
+// Значения из json_data по ключу в нижнем регистре: плейсхолдеры ищутся без учёта регистра.
+function parseValues(jsonData) {
     let data;
     try {
-        data = JSON.parse(json);
+        data = JSON.parse(jsonData);
     } catch {
         // Сообщение парсера может содержать часть значений
-        throw new Error('json is not a valid JSON');
+        throw new Error('json_data is not a valid JSON');
     }
     if (data === null || typeof data !== 'object' || Array.isArray(data)) {
-        throw new Error('json must be an object');
+        throw new Error('json_data must be an object');
     }
 
     const values = new Map();
     for (const [key, value] of Object.entries(data)) {
         const lowerKey = key.toLowerCase();
         if (values.has(lowerKey)) {
-            throw new Error(`Duplicate key ${key} in json: keys are case-insensitive`);
+            throw new Error(`Duplicate key ${key} in json_data: keys are case-insensitive`);
         }
         if (value !== null && typeof value === 'object') {
-            throw new Error(`Value of ${key} in json must be a string, number, boolean or null`);
+            throw new Error(`Value of ${key} in json_data must be a string, number, boolean or null`);
         }
         values.set(lowerKey, String(value ?? ''));
     }
@@ -39,34 +39,34 @@ function parseValues(json) {
 }
 
 try {
-    let templatePath = core.getInput('template_path');
-    const json = core.getInput('json');
-    let outputDir = core.getInput('output_dir');
+    let configsPath = core.getInput('configs_path');
+    const configsMask = core.getInput('configs_mask') || '*.json';
+    const jsonData = core.getInput('json_data');
     const isAllowUnresolved = core.getBooleanInput('is_allow_unresolved');
-    const mask = core.getInput('mask') || '*.json';
+    let outputPath = core.getInput('output_path');
 
-    if (templatePath.startsWith('./')) {
-        templatePath = templatePath.slice(2);
+    if (configsPath.startsWith('./')) {
+        configsPath = configsPath.slice(2);
     }
-    if (outputDir.startsWith('./')) {
-        outputDir = outputDir.slice(2);
+    if (outputPath.startsWith('./')) {
+        outputPath = outputPath.slice(2);
     }
 
-    const values = parseValues(json);
-    const maskRegExp = maskToRegExp(mask);
-    // Плейсхолдеры без значения в json: «ключ in файл», только имена, без значений
+    const values = parseValues(jsonData);
+    const maskRegExp = maskToRegExp(configsMask);
+    // Плейсхолдеры без значения в json_data: «ключ in файл», только имена, без значений
     const unresolved = new Set();
 
-    if (fs.statSync(templatePath).isDirectory()) {
-        // Обходим подпапки, структура сохраняется в output_dir
-        processDirectory(templatePath, '');
+    if (fs.statSync(configsPath).isDirectory()) {
+        // Обходим подпапки, структура сохраняется в output_path
+        processDirectory(configsPath, '');
     } else {
         // Single file mode
-        const fileName = path.basename(templatePath);
+        const fileName = path.basename(configsPath);
         if (!maskRegExp.test(fileName)) {
-            console.log(`🟡 Skipped file: ${templatePath} (does not match mask: ${mask})`);
+            console.log(`🟡 Skipped file: ${configsPath} (does not match mask: ${configsMask})`);
         } else {
-            processFile(templatePath, fileName);
+            processFile(configsPath, fileName);
         }
     }
 
@@ -104,7 +104,7 @@ try {
             return isJson ? JSON.stringify(value).slice(1, -1) : value;
         });
 
-        const outputFilePath = path.join(outputDir, relativePath);
+        const outputFilePath = path.join(outputPath, relativePath);
         const outputDirPath = path.dirname(outputFilePath);
 
         if (!fs.existsSync(outputDirPath)) {

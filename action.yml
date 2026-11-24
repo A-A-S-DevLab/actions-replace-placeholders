@@ -1,26 +1,24 @@
 name: 'Replace placeholders'
-description: 'This GitHub Action helps to replace all placeholders in file'
+description: 'This GitHub Action helps to replace all placeholders in files'
 author: 'Alexey Savelyev with AI'
 inputs:
-    template_path:
-        description: 'The path to the template file or directory.'
+    configs_path:
+        description: 'Path to a config file or directory, relative to the workspace'
         required: true
-        default: ''
-    json:
-        description: 'JSON object {"key": "value"} with the replacement data, keys are case-insensitive.'
-        required: true
-    output_dir:
-        description: 'Directory where modified files will be saved.'
-        required: true
-        default: '.'
-    is_allow_unresolved:
-        description: 'Allow placeholders without a value in json: true — they stay in the file, false — the step fails and lists them'
-        required: false
-        default: 'true'
-    mask:
-        description: 'Simple file mask, e.g., *.txt or *.json'
+    configs_mask:
+        description: 'File name mask: * — any characters, ? — one character, case-insensitive'
         required: false
         default: '*.json'
+    json_data:
+        description: 'JSON object {"key": "value"} with the replacement data, keys are case-insensitive'
+        required: true
+    is_allow_unresolved:
+        description: 'Allow placeholders without a value in json_data: true — they stay in the file, false — the step fails and lists them'
+        required: false
+        default: 'true'
+    output_path:
+        description: 'Directory where the processed files are saved, relative to the workspace'
+        required: true
 
 runs:
     using: 'node24'
