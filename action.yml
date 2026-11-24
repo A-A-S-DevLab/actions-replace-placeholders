@@ -6,8 +6,8 @@ inputs:
         description: 'The path to the template file or directory.'
         required: true
         default: ''
-    data_path:
-        description: 'Path to the JSON file containing the replacement data.'
+    json:
+        description: 'JSON object {"key": "value"} with the replacement data, keys are case-insensitive.'
         required: true
     output_dir:
         description: 'Directory where modified files will be saved.'

@@ -11,7 +11,7 @@ Add this step in your workflow file
     uses: A-A-S-DevLab/actions-replace-placeholders@v1.0.0
     with:
         template_path: 'templates/files'  # Directory with files (or specify a single file path)
-        data_path: 'data/values.json'  # JSON file with replacement values
+        json: ${{ steps.service_secrets.outputs.credentials }}  # JSON object with replacement values
         output_dir: 'dist/files-output'  # Directory to save modified files
         mask: '*.txt'  # Mask to filter files (e.g., '*.txt', '*.json')
 ```
@@ -19,7 +19,7 @@ Add this step in your workflow file
 ## Input Variables
 
 - `template_path`: The path to the template file or directory.
-- `data_path`: Path to the JSON file containing the replacement data.
+- `json`: JSON object `{"key": "value"}` with the replacement data. Values must be strings, numbers, booleans or `null`. Keys are case-insensitive: `${{ DB_PASSWORD }}` and `${{ db_password }}` get the value of `db_password`; keys that differ only in case fail the step.
 - `output_dir`: Directory where modified files will be saved.
 - `mask`: File name mask: `*` matches any characters, `?` one character, case-insensitive (e.g., `*.txt`, `*.json`, `*.*`, `*`). Default `*.json`. In directory mode subdirectories are processed too, and their structure is kept in `output_dir`.
 
