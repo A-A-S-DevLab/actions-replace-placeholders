@@ -122,5 +122,5 @@ try {
         console.log(`🟡 ${message}`);
     }
 } catch (error) {
-    core.setFailed(`❌ Error: ${error.message}`);
+    core.setFailed(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
 }
